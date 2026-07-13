@@ -16,12 +16,39 @@ export class BookingService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: GetBookingsQueryDto) {
+    const where: Prisma.BookingWhereInput = {};
+  
+    if (query.status) {
+      where.status = query.status;
+    }
+  
+    if (query.search?.trim()) {
+      const search = query.search.trim();
+  
+      where.OR = [
+        {
+          customerName: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          customerEmail: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          customerPhone: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      ];
+    }
+  
     return this.prisma.booking.findMany({
-      where: {
-        ...(query.status && {
-          status: query.status,
-        }),
-      },
+      where,
       orderBy: {
         createdAt: 'desc',
       },

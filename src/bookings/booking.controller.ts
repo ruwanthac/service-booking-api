@@ -6,12 +6,14 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { Booking } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { GetBookingsQueryDto } from './dto/get-bookings-query.dto';
 import { UpdateBookingStatusDto } from './dto/update-booking-status.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 
@@ -21,8 +23,10 @@ export class BookingController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async findAll() {
-    return this.bookingService.findAll();
+  async findAll(
+    @Query() query: GetBookingsQueryDto,
+  ) {
+    return this.bookingService.findAll(query);
   }
 
   @Get(':id')

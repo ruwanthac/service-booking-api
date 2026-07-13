@@ -7,6 +7,7 @@ import {
 import { Booking, BookingStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { GetBookingsQueryDto } from './dto/get-bookings-query.dto';
 import { UpdateBookingStatusDto } from './dto/update-booking-status.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 
@@ -14,10 +15,19 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 export class BookingService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
+  async findAll(query: GetBookingsQueryDto) {
     return this.prisma.booking.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: { service: true },
+      where: {
+        ...(query.status && {
+          status: query.status,
+        }),
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        service: true,
+      },
     });
   }
 

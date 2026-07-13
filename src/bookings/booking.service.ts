@@ -17,14 +17,14 @@ export class BookingService {
 
   async findAll(query: GetBookingsQueryDto) {
     const where: Prisma.BookingWhereInput = {};
-  
+
     if (query.status) {
       where.status = query.status;
     }
-  
+
     if (query.search?.trim()) {
       const search = query.search.trim();
-  
+
       where.OR = [
         {
           customerName: {
@@ -46,9 +46,15 @@ export class BookingService {
         },
       ];
     }
-  
+
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 10;
+    const skip = (page - 1) * limit;
+
     return this.prisma.booking.findMany({
       where,
+      skip,
+      take: limit,
       orderBy: {
         createdAt: 'desc',
       },

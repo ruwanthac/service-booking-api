@@ -3,12 +3,14 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { Service } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateServiceDto } from './dto/create-service.dto';
+import { UpdateServiceDto } from './dto/update-service.dto';
 import { ServiceService } from './service.service';
 
 @Controller('services')
@@ -31,5 +33,14 @@ export class ServiceController {
   @UseGuards(JwtAuthGuard)
   create(@Body() dto: CreateServiceDto): Promise<Service> {
     return this.serviceService.create(dto);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateServiceDto,
+  ): Promise<Service> {
+    return this.serviceService.update(id, dto);
   }
 }

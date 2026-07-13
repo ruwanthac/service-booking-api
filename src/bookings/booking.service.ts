@@ -19,6 +19,17 @@ export class BookingService {
     });
   }
 
+  async findOne(id: string) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: { service: true },
+    });
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+    return booking;
+  }
+
   async create(dto: CreateBookingDto): Promise<Booking> {
     const service = await this.prisma.service.findUnique({
       where: { id: dto.serviceId },

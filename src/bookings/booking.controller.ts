@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Booking } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BookingService } from './booking.service';
@@ -12,6 +20,14 @@ export class BookingController {
   @UseGuards(JwtAuthGuard)
   async findAll() {
     return this.bookingService.findAll();
+  }
+
+  @Get(':id')
+@UseGuards(JwtAuthGuard)
+async findOne(
+  @Param('id', new ParseUUIDPipe()) id: string,
+) {
+  return this.bookingService.findOne(id);
   }
 
   @Post()

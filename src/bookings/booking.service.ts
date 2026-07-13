@@ -12,6 +12,13 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 export class BookingService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findAll() {
+    return this.prisma.booking.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { service: true },
+    });
+  }
+
   async create(dto: CreateBookingDto): Promise<Booking> {
     const service = await this.prisma.service.findUnique({
       where: { id: dto.serviceId },

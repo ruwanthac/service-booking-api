@@ -20,7 +20,7 @@ This application provides a backend for a **Service Booking Platform**. Authenti
 ## Quick Start
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/ruwanthac/service-booking-api
 cd service-booking-api
 
 npm install
@@ -221,6 +221,13 @@ npm run start:prod
 ```
 
 ---
+
+## Postman Collection
+
+A Postman collection containing all API endpoints is included in the `postman/` directory for easy API testing.
+
+---
+
 
 ## API Documentation
 

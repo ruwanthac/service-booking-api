@@ -145,3 +145,5 @@ vite.config.ts.timestamp-*
 /generated/prisma
 
 .temp_docs/
+
+.cursor

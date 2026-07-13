@@ -47,6 +47,7 @@ export class BookingService {
     // both require JS Date objects. Normalize "HH:MM" → "HH:MM:SS" so the
     // constructed Date is always well-formed.
     const bookingDate = new Date(dto.bookingDate);
+    this.assertBookingDateNotInPast(bookingDate);
     const normalizedTime = /^\d{2}:\d{2}$/.test(dto.bookingTime)
       ? `${dto.bookingTime}:00`
       : dto.bookingTime;
@@ -112,6 +113,7 @@ export class BookingService {
       dto.bookingDate !== undefined
         ? new Date(dto.bookingDate)
         : existing.bookingDate;
+    this.assertBookingDateNotInPast(effectiveBookingDate);
 
     let effectiveBookingTime = existing.bookingTime;
     if (dto.bookingTime !== undefined) {
@@ -213,5 +215,22 @@ export class BookingService {
       data: { status: BookingStatus.CANCELLED },
       include: { service: true },
     });
+  }
+
+  private assertBookingDateNotInPast(date: Date): void {
+    const now = new Date();
+    const todayUtc = Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+    );
+    const targetUtc = Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+    );
+    if (targetUtc < todayUtc) {
+      throw new BadRequestException('Booking date cannot be in the past');
+    }
   }
 }

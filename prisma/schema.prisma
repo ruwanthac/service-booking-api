@@ -64,13 +64,12 @@ model Booking {
   notes         String?
 
   serviceId String  @map("service_id") @db.Uuid
-  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   // Hard guarantee: no two bookings for the same service in the same slot.
-  // Also serves as a covering index for (service_id) and (service_id, booking_date, ...).
   @@unique([serviceId, bookingDate, bookingTime], name: "booking_service_slot_unique")
   // Dashboard filters (e.g. all PENDING bookings).
   @@index([status])

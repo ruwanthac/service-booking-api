@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, Service } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateServiceDto } from './dto/create-service.dto';
@@ -68,5 +72,33 @@ export class ServiceService {
       where: { id },
       data,
     });
+  }
+
+  async remove(id: string): Promise<void> {
+    const existing = await this.prisma.service.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    if (!existing) {
+      throw new NotFoundException('Service not found');
+    }
+
+    try {
+      await this.prisma.service.delete({ where: { id } });
+    } catch (err) {
+      // Booking.serviceId is declared with `onDelete: Restrict` in the Prisma
+      // schema, so Postgres rejects deleting a service that still has
+      // bookings. Translate that FK violation into a proper 409 instead of
+      // letting it surface as a 500.
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2003'
+      ) {
+        throw new ConflictException(
+          'Cannot delete service because it has existing bookings',
+        );
+      }
+      throw err;
+    }
   }
 }

@@ -1,98 +1,351 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Service Booking API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+![NestJS](https://img.shields.io/badge/NestJS-v11-red)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A RESTful Service Booking API built with NestJS and PostgreSQL as part of the EN2H Software Engineer Intern (NestJS) Technical Assignment.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Project Overview
 
-## Project setup
+This application provides a backend for a **Service Booking Platform**. Authenticated users can manage the service catalogue and oversee bookings, while customers can create bookings without an account. The API enforces business rules around booking availability, date validation, and status workflows, and exposes interactive documentation via Swagger.
+
+---
+
+## Quick Start
 
 ```bash
-$ npm install
+git clone <repository-url>
+cd service-booking-api
+
+npm install
+
+cp .env.example .env
+
+docker compose up -d
+
+npx prisma migrate dev
+
+npm run start:dev
 ```
 
-## Compile and run the project
+---
+
+## Features
+
+### Authentication
+
+- JWT Authentication
+- Register
+- Login
+
+### Service Management
+
+- Create Service
+- Get All Services
+- Get Service By ID
+- Update Service
+- Delete Service
+
+### Booking Management
+
+- Create Booking (Public)
+- Get All Bookings
+- Get Booking By ID
+- Update Booking
+- Update Booking Status
+- Cancel Booking
+
+### Validation
+
+- DTO validation using `class-validator`
+- Global `ValidationPipe` with whitelist, transform, and forbid-non-whitelisted options
+
+### Business Rules
+
+- Booking must belong to an existing service
+- Booking date cannot be in the past
+- Prevent duplicate bookings for the same service, date and time
+- Cancelled bookings cannot have their status updated
+- Booking status workflow: `PENDING` → `CONFIRMED` → `COMPLETED`
+
+### Search & Filtering
+
+- Search bookings by customer name, email or phone
+- Filter bookings by status
+
+### Pagination
+
+- `page` (default: `1`)
+- `limit` (default: `10`, maximum: `100`)
+
+### Documentation
+
+- Swagger UI at `/api`
+
+### Database
+
+- Prisma ORM
+- PostgreSQL
+
+---
+
+## API Features
+
+- JWT Authentication
+- CRUD Services
+- CRUD Bookings
+- Booking Status Workflow
+- Booking Cancellation
+- Booking Search
+- Booking Filtering
+- Pagination
+- Duplicate Booking Prevention
+- Swagger Documentation
+
+---
+
+## Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| **NestJS** | Application framework |
+| **TypeScript** | Language |
+| **Prisma** | ORM and database migrations |
+| **PostgreSQL** | Relational database |
+| **JWT** | Stateless authentication |
+| **Swagger** | API documentation |
+| **Class Validator** | Request validation |
+| **Docker Compose** | Local PostgreSQL container |
+
+---
+
+## Project Structure
+
+The project follows the standard NestJS modular architecture to keep the codebase clean, scalable and maintainable.
+
+```
+service-booking-api/
+├── prisma/
+│   ├── migrations/          # Database migration history
+│   └── schema.prisma        # Data models and relations
+├── src/
+│   ├── auth/                # Registration, login, JWT strategy and guard
+│   ├── bookings/            # Booking controller, service, and DTOs
+│   ├── services/            # Service controller, service, and DTOs
+│   ├── prisma/              # Global Prisma module and service
+│   ├── app.module.ts        # Root application module
+│   └── main.ts              # Bootstrap, validation pipe, Swagger setup
+├── docker-compose.yml       # Local PostgreSQL container
+├── .env.example             # Environment variable template
+└── README.md
+```
+
+---
+
+## Installation
+
+Clone the repository and install dependencies:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+---
+
+## Environment Variables
+
+Copy the example environment file and update values as needed:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
 ```
 
-## Deployment
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `JWT_SECRET` | Secret key used to sign JWT tokens |
+| `PORT` | HTTP port (default: `3000`) |
+| `NODE_ENV` | Runtime environment (e.g. `development`) |
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Example `.env`:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/booking_db?schema=public"
+JWT_SECRET="your_jwt_secret_here"
+PORT=3000
+NODE_ENV=development
+```
+
+---
+
+## Database Setup
+
+This project uses Prisma Migrations to manage database schema changes.
+
+Start PostgreSQL locally using Docker:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker compose up -d
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Apply migrations and generate the Prisma client:
 
-## Resources
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Running the Application
 
-## Support
+### Development
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm run start:dev
+```
 
-## Stay in touch
+The server runs with hot-reload enabled.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Production
+
+```bash
+npm run build
+npm run start:prod
+```
+
+---
+
+## API Documentation
+
+Interactive Swagger documentation is available once the application is running:
+
+**http://localhost:3000/api**
+
+Use the **Authorize** button in Swagger UI to attach a JWT bearer token to protected endpoints.
+
+---
+
+## Authentication
+
+1. **Register** a new account via `POST /auth/register`.
+2. **Login** via `POST /auth/login` to receive a JWT `accessToken`.
+3. Include the token on protected endpoints using the `Authorization` header:
+
+```http
+Authorization: Bearer <token>
+```
+
+**Note:** Creating a booking (`POST /bookings`) is **public** and does not require authentication. All service endpoints and all other booking endpoints require a valid JWT.
+
+### Example
+
+```bash
+# Register
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"password123"}'
+
+# Login
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"password123"}'
+```
+
+---
+
+## API Endpoints
+
+### Auth
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/auth/register` | Public | Register a new user |
+| `POST` | `/auth/login` | Public | Login and receive a JWT |
+
+### Services
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/services` | JWT | Create a new service |
+| `GET` | `/services` | JWT | Get all services |
+| `GET` | `/services/:id` | JWT | Get a service by ID |
+| `PATCH` | `/services/:id` | JWT | Update a service |
+| `DELETE` | `/services/:id` | JWT | Delete a service |
+
+### Bookings
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/bookings` | Public | Create a booking |
+| `GET` | `/bookings` | JWT | Get all bookings (supports `status`, `search`, `page`, `limit`) |
+| `GET` | `/bookings/:id` | JWT | Get a booking by ID |
+| `PATCH` | `/bookings/:id` | JWT | Update booking details |
+| `PATCH` | `/bookings/:id/status` | JWT | Update booking status |
+| `PATCH` | `/bookings/:id/cancel` | JWT | Cancel a booking |
+
+---
+
+## Business Rules
+
+The following rules are enforced at the application and database layers:
+
+| Rule | Behaviour |
+|---|---|
+| **Service must exist** | A booking cannot be created or updated to reference a non-existent service. Inactive services cannot be booked. |
+| **No past dates** | `bookingDate` must be today or a future date (UTC comparison). |
+| **No duplicate slots** | Only one booking is allowed per service for the same date and time. Enforced in application logic and by a unique database constraint on `(serviceId, bookingDate, bookingTime)`. |
+| **Status workflow** | Status updates follow `PENDING` → `CONFIRMED` → `COMPLETED`. Skipping steps or reversing the flow is rejected. |
+| **Cancelled bookings** | A cancelled booking cannot be updated via the status endpoint. Cancellation uses a dedicated endpoint. |
+| **Service deletion** | A service with existing bookings cannot be deleted (foreign key restriction). |
+
+---
+
+## Bonus Features
+
+- ✔ Swagger Documentation
+- ✔ Pagination
+- ✔ Search
+- ✔ Status Filtering
+- ✔ Duplicate Booking Prevention
+- ✔ Validation
+
+---
+
+## Assumptions
+
+- **Single user role** — All authenticated users share the same permissions; role-based access control is not implemented.
+- **Public booking** — Customers can create bookings without registering or logging in.
+- **Protected administration** — Service management and booking administration require JWT authentication.
+- **Booking time format** — `bookingTime` is accepted as a string in `HH:mm` format (e.g. `14:30`).
+- **Local development** — PostgreSQL is expected to run via the provided `docker-compose.yml` configuration.
+- **Password storage** — Passwords are hashed with bcrypt before persistence; plaintext passwords are never stored.
+- **Cancellation model** — Cancellation is handled by a dedicated endpoint and sets status to `CANCELLED`, separate from the forward status workflow.
+
+---
+
+## Future Improvements
+
+- Refresh Tokens
+- Unit Tests
+- Docker Deployment (full application container)
+- Email Notifications
+- Booking Availability Calendar
+- Rate Limiting
+- Role-Based Authorization
+
+---
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT
+
+---
+
+Developed as part of the EN2H Software Engineer Intern (NestJS) Technical Assignment.

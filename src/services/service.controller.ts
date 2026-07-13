@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Service } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateServiceDto } from './dto/create-service.dto';
@@ -12,6 +19,12 @@ export class ServiceController {
   @UseGuards(JwtAuthGuard)
   findAll(): Promise<Service[]> {
     return this.serviceService.findAll();
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  findOne(@Param('id') id: string): Promise<Service> {
+    return this.serviceService.findOne(id);
   }
 
   @Post()

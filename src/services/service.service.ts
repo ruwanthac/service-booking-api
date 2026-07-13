@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Service } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateServiceDto } from './dto/create-service.dto';
@@ -11,6 +11,14 @@ export class ServiceService {
     return this.prisma.service.findMany({
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async findOne(id: string): Promise<Service> {
+    const service = await this.prisma.service.findUnique({ where: { id } });
+    if (!service) {
+      throw new NotFoundException('Service not found');
+    }
+    return service;
   }
 
   create(dto: CreateServiceDto): Promise<Service> {

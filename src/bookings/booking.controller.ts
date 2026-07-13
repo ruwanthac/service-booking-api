@@ -46,4 +46,10 @@ async findOne(
   ) {
     return this.bookingService.update(id, dto);
   }
+
+  @Patch(':id/cancel')
+  @UseGuards(JwtAuthGuard)
+  async cancel(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.bookingService.cancel(id);
+  }
 }

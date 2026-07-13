@@ -34,7 +34,6 @@ export class BookingController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   create(@Body() dto: CreateBookingDto): Promise<Booking> {
     return this.bookingService.create(dto);
   }

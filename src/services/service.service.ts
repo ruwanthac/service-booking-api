@@ -7,6 +7,12 @@ import { CreateServiceDto } from './dto/create-service.dto';
 export class ServiceService {
   constructor(private readonly prisma: PrismaService) {}
 
+  findAll(): Promise<Service[]> {
+    return this.prisma.service.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   create(dto: CreateServiceDto): Promise<Service> {
     return this.prisma.service.create({
       data: {

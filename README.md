@@ -1,5 +1,6 @@
 # Service Booking API
 
+[![CI](https://github.com/ruwanthac/service-booking-api/actions/workflows/ci.yml/badge.svg)](https://github.com/ruwanthac/service-booking-api/actions/workflows/ci.yml)
 ![NestJS](https://img.shields.io/badge/NestJS-v11-red)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748)

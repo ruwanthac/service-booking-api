@@ -102,6 +102,21 @@ export class ServiceController {
     return this.serviceService.findAll();
   }
 
+  @Get('public')
+  @ApiOperation({
+    summary: 'Get all active services (no authentication required)',
+  })
+  @ApiOkResponse({
+    description: 'List of active services ordered by newest first',
+    schema: {
+      type: 'array',
+      items: serviceSchema,
+    },
+  })
+  findAllActive(): Promise<Service[]> {
+    return this.serviceService.findAllActive();
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get a service by ID' })

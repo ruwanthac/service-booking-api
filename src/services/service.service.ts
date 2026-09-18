@@ -18,6 +18,15 @@ export class ServiceService {
     });
   }
 
+  // Used by the public booking page: customers must be able to see what
+  // they can book without authenticating, but only active services.
+  findAllActive(): Promise<Service[]> {
+    return this.prisma.service.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findOne(id: string): Promise<Service> {
     const service = await this.prisma.service.findUnique({
       where: { id },

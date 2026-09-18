@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ServiceModule } from './services/service.module';
 import { BookingModule } from './bookings/booking.module';
 import { HealthModule } from './health/health.module';
+import { validate } from './config/env.validation';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { HealthModule } from './health/health.module';
       isGlobal: true,
       envFilePath: '.env',
       cache: true,
+      validate,
     }),
     PrismaModule,
     AuthModule,

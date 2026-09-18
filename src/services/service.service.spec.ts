@@ -48,6 +48,21 @@ describe('ServiceService', () => {
     });
   });
 
+  describe('findAllActive', () => {
+    it('returns only active services ordered by newest first', async () => {
+      const services = [{ id: 'service-1', isActive: true }];
+      prisma.service.findMany.mockResolvedValue(services);
+
+      const result = await service.findAllActive();
+
+      expect(result).toBe(services);
+      expect(prisma.service.findMany).toHaveBeenCalledWith({
+        where: { isActive: true },
+        orderBy: { createdAt: 'desc' },
+      });
+    });
+  });
+
   describe('findOne', () => {
     it('returns the service when it exists', async () => {
       const found = { id: 'service-1' };

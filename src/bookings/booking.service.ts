@@ -269,23 +269,21 @@ export class BookingService {
         status: true,
       },
     });
-  
+
     if (!existing) {
       throw new NotFoundException('Booking not found');
     }
-  
+
     if (existing.status === BookingStatus.CANCELLED) {
       throw new BadRequestException(
         'Cancelled bookings cannot have their status updated',
       );
     }
-  
+
     if (existing.status === dto.status) {
-      throw new BadRequestException(
-        'Booking already has this status',
-      );
+      throw new BadRequestException('Booking already has this status');
     }
-  
+
     // Enforce valid booking workflow.
     const validTransitions: Record<BookingStatus, BookingStatus[]> = {
       [BookingStatus.PENDING]: [BookingStatus.CONFIRMED],
@@ -293,17 +291,15 @@ export class BookingService {
       [BookingStatus.COMPLETED]: [],
       [BookingStatus.CANCELLED]: [],
     };
-    
+
     if (!validTransitions[existing.status].includes(dto.status)) {
-      throw new BadRequestException(
-        'Invalid booking status transition',
-      );
+      throw new BadRequestException('Invalid booking status transition');
     }
-  
+
     const data: Prisma.BookingUpdateInput = {
       status: dto.status,
     };
-  
+
     return this.prisma.booking.update({
       where: { id },
       data,

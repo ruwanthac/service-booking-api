@@ -1,19 +1,11 @@
 import { BookingStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class GetBookingsQueryDto {
   @IsOptional()
   @IsEnum(BookingStatus, {
-    message:
-      'Status must be one of: PENDING, CONFIRMED, CANCELLED, COMPLETED',
+    message: 'Status must be one of: PENDING, CONFIRMED, CANCELLED, COMPLETED',
   })
   status?: BookingStatus;
 

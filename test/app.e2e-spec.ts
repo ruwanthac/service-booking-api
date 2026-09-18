@@ -5,6 +5,19 @@ import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { PrismaService } from './../src/prisma/prisma.service';
 
+interface LoginResponseBody {
+  accessToken: string;
+}
+
+interface ServiceResponseBody {
+  id: string;
+}
+
+interface BookingResponseBody {
+  id: string;
+  status: string;
+}
+
 describe('App (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
@@ -72,8 +85,9 @@ describe('App (e2e)', () => {
         .send({ email, password })
         .expect(200);
 
-      expect(res.body.accessToken).toEqual(expect.any(String));
-      accessToken = res.body.accessToken;
+      const body = res.body as LoginResponseBody;
+      expect(body.accessToken).toEqual(expect.any(String));
+      accessToken = body.accessToken;
     });
 
     it('creates a service using the JWT', async () => {
@@ -88,8 +102,9 @@ describe('App (e2e)', () => {
         })
         .expect(201);
 
-      expect(res.body.id).toEqual(expect.any(String));
-      serviceId = res.body.id;
+      const body = res.body as ServiceResponseBody;
+      expect(body.id).toEqual(expect.any(String));
+      serviceId = body.id;
     });
 
     it('rejects creating a service without a JWT', async () => {
@@ -117,8 +132,9 @@ describe('App (e2e)', () => {
         })
         .expect(201);
 
-      expect(res.body.status).toBe('PENDING');
-      bookingId = res.body.id;
+      const body = res.body as BookingResponseBody;
+      expect(body.status).toBe('PENDING');
+      bookingId = body.id;
     });
 
     it('rejects a duplicate booking for the same service/date/time slot', async () => {
@@ -145,9 +161,8 @@ describe('App (e2e)', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
 
-      expect(
-        res.body.some((booking: { id: string }) => booking.id === bookingId),
-      ).toBe(true);
+      const body = res.body as BookingResponseBody[];
+      expect(body.some((booking) => booking.id === bookingId)).toBe(true);
     });
 
     it('updates the booking status to CONFIRMED', async () => {
@@ -157,7 +172,7 @@ describe('App (e2e)', () => {
         .send({ status: 'CONFIRMED' })
         .expect(200);
 
-      expect(res.body.status).toBe('CONFIRMED');
+      expect((res.body as BookingResponseBody).status).toBe('CONFIRMED');
     });
 
     it('rejects an invalid status transition (CONFIRMED -> PENDING)', async () => {
@@ -174,7 +189,7 @@ describe('App (e2e)', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
 
-      expect(res.body.status).toBe('CANCELLED');
+      expect((res.body as BookingResponseBody).status).toBe('CANCELLED');
     });
 
     it('rejects cancelling an already-cancelled booking', async () => {

@@ -4,7 +4,11 @@ import { IsIn, IsNotEmpty } from 'class-validator';
 
 export class UpdateBookingStatusDto {
   @ApiProperty({
-    enum: [BookingStatus.PENDING, BookingStatus.CONFIRMED, BookingStatus.COMPLETED],
+    enum: [
+      BookingStatus.PENDING,
+      BookingStatus.CONFIRMED,
+      BookingStatus.COMPLETED,
+    ],
     example: BookingStatus.CONFIRMED,
     description: 'New booking status (PENDING, CONFIRMED, or COMPLETED)',
   })

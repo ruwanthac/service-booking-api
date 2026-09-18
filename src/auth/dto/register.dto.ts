@@ -8,7 +8,7 @@ export class RegisterDto {
     format: 'email',
     description: 'User email address',
   })
-  @Transform(({ value }) => value.trim().toLowerCase())
+  @Transform(({ value }: { value: string }) => value.trim().toLowerCase())
   @IsNotEmpty({ message: 'Email is required' })
   @IsEmail({}, { message: 'Email must be a valid email address' })
   email: string;

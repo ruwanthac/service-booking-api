@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BookingStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -58,7 +62,10 @@ describe('BookingService', () => {
     });
 
     it('throws BadRequestException when the service is inactive', async () => {
-      prisma.service.findUnique.mockResolvedValue({ id: validCreateDto.serviceId, isActive: false });
+      prisma.service.findUnique.mockResolvedValue({
+        id: validCreateDto.serviceId,
+        isActive: false,
+      });
 
       await expect(service.create(validCreateDto)).rejects.toBeInstanceOf(
         BadRequestException,
@@ -67,7 +74,10 @@ describe('BookingService', () => {
     });
 
     it('rejects a booking date in the past', async () => {
-      prisma.service.findUnique.mockResolvedValue({ id: validCreateDto.serviceId, isActive: true });
+      prisma.service.findUnique.mockResolvedValue({
+        id: validCreateDto.serviceId,
+        isActive: true,
+      });
 
       await expect(
         service.create({ ...validCreateDto, bookingDate: '2000-01-01' }),
@@ -76,7 +86,10 @@ describe('BookingService', () => {
     });
 
     it('throws ConflictException when the slot is already taken (pre-check)', async () => {
-      prisma.service.findUnique.mockResolvedValue({ id: validCreateDto.serviceId, isActive: true });
+      prisma.service.findUnique.mockResolvedValue({
+        id: validCreateDto.serviceId,
+        isActive: true,
+      });
       prisma.booking.findFirst.mockResolvedValue({ id: 'existing-booking' });
 
       await expect(service.create(validCreateDto)).rejects.toBeInstanceOf(
@@ -86,7 +99,10 @@ describe('BookingService', () => {
     });
 
     it('turns a concurrent unique-constraint violation into a ConflictException', async () => {
-      prisma.service.findUnique.mockResolvedValue({ id: validCreateDto.serviceId, isActive: true });
+      prisma.service.findUnique.mockResolvedValue({
+        id: validCreateDto.serviceId,
+        isActive: true,
+      });
       prisma.booking.findFirst.mockResolvedValue(null);
       prisma.booking.create.mockRejectedValue(
         new Prisma.PrismaClientKnownRequestError('duplicate', {
@@ -101,7 +117,10 @@ describe('BookingService', () => {
     });
 
     it('rethrows unrelated database errors from create', async () => {
-      prisma.service.findUnique.mockResolvedValue({ id: validCreateDto.serviceId, isActive: true });
+      prisma.service.findUnique.mockResolvedValue({
+        id: validCreateDto.serviceId,
+        isActive: true,
+      });
       prisma.booking.findFirst.mockResolvedValue(null);
       const dbError = new Error('connection lost');
       prisma.booking.create.mockRejectedValue(dbError);
@@ -110,18 +129,39 @@ describe('BookingService', () => {
     });
 
     it('creates the booking with normalized date/time when the slot is free', async () => {
-      prisma.service.findUnique.mockResolvedValue({ id: validCreateDto.serviceId, isActive: true });
+      prisma.service.findUnique.mockResolvedValue({
+        id: validCreateDto.serviceId,
+        isActive: true,
+      });
       prisma.booking.findFirst.mockResolvedValue(null);
       prisma.booking.create.mockResolvedValue({ id: 'booking-1' });
 
       await service.create(validCreateDto);
 
-      const createArgs = prisma.booking.create.mock.calls[0][0];
+      const calls = prisma.booking.create.mock.calls as Array<
+        [
+          {
+            data: {
+              customerName: string;
+              customerEmail: string;
+              serviceId: string;
+              bookingDate: Date;
+              bookingTime: Date;
+              notes?: string;
+            };
+          },
+        ]
+      >;
+      const createArgs = calls[0][0];
       expect(createArgs.data.customerName).toBe(validCreateDto.customerName);
       expect(createArgs.data.customerEmail).toBe(validCreateDto.customerEmail);
       expect(createArgs.data.serviceId).toBe(validCreateDto.serviceId);
-      expect(createArgs.data.bookingDate).toEqual(new Date(validCreateDto.bookingDate));
-      expect(createArgs.data.bookingTime).toEqual(new Date('1970-01-01T14:30:00Z'));
+      expect(createArgs.data.bookingDate).toEqual(
+        new Date(validCreateDto.bookingDate),
+      );
+      expect(createArgs.data.bookingTime).toEqual(
+        new Date('1970-01-01T14:30:00Z'),
+      );
       expect(createArgs.data.notes).toBeUndefined();
     });
   });
@@ -163,7 +203,10 @@ describe('BookingService', () => {
 
     it('throws BadRequestException when switching to an inactive service', async () => {
       prisma.booking.findUnique.mockResolvedValue(existingBooking);
-      prisma.service.findUnique.mockResolvedValue({ id: 'other-service-id', isActive: false });
+      prisma.service.findUnique.mockResolvedValue({
+        id: 'other-service-id',
+        isActive: false,
+      });
 
       await expect(
         service.update('booking-1', { serviceId: 'other-service-id' }),
@@ -325,7 +368,9 @@ describe('BookingService', () => {
         status: BookingStatus.CONFIRMED,
       });
 
-      await service.updateStatus('booking-1', { status: BookingStatus.CONFIRMED });
+      await service.updateStatus('booking-1', {
+        status: BookingStatus.CONFIRMED,
+      });
 
       expect(prisma.booking.update).toHaveBeenCalledWith({
         where: { id: 'booking-1' },
@@ -344,7 +389,9 @@ describe('BookingService', () => {
         status: BookingStatus.COMPLETED,
       });
 
-      await service.updateStatus('booking-1', { status: BookingStatus.COMPLETED });
+      await service.updateStatus('booking-1', {
+        status: BookingStatus.COMPLETED,
+      });
 
       expect(prisma.booking.update).toHaveBeenCalledWith({
         where: { id: 'booking-1' },

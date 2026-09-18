@@ -54,7 +54,10 @@ describe('AuthService', () => {
         select: { id: true },
       });
 
-      const createArgs = prisma.user.create.mock.calls[0][0];
+      const calls = prisma.user.create.mock.calls as Array<
+        [{ data: { email: string; password: string } }]
+      >;
+      const createArgs = calls[0][0];
       expect(createArgs.data.email).toBe('user@example.com');
       expect(createArgs.data.password).not.toBe('password123');
       await expect(
@@ -66,7 +69,10 @@ describe('AuthService', () => {
       prisma.user.findUnique.mockResolvedValue({ id: 'existing-user' });
 
       await expect(
-        service.register({ email: 'taken@example.com', password: 'password123' }),
+        service.register({
+          email: 'taken@example.com',
+          password: 'password123',
+        }),
       ).rejects.toBeInstanceOf(ConflictException);
       expect(prisma.user.create).not.toHaveBeenCalled();
     });
@@ -81,7 +87,10 @@ describe('AuthService', () => {
       );
 
       await expect(
-        service.register({ email: 'race@example.com', password: 'password123' }),
+        service.register({
+          email: 'race@example.com',
+          password: 'password123',
+        }),
       ).rejects.toBeInstanceOf(ConflictException);
     });
 
@@ -91,7 +100,10 @@ describe('AuthService', () => {
       prisma.user.create.mockRejectedValue(dbError);
 
       await expect(
-        service.register({ email: 'boom@example.com', password: 'password123' }),
+        service.register({
+          email: 'boom@example.com',
+          password: 'password123',
+        }),
       ).rejects.toBe(dbError);
     });
   });
@@ -135,7 +147,10 @@ describe('AuthService', () => {
       });
 
       await expect(
-        service.login({ email: 'user@example.com', password: 'wrong-password' }),
+        service.login({
+          email: 'user@example.com',
+          password: 'wrong-password',
+        }),
       ).rejects.toBeInstanceOf(UnauthorizedException);
       expect(jwt.signAsync).not.toHaveBeenCalled();
     });

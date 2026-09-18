@@ -120,15 +120,18 @@ describe('ServiceService', () => {
     it('throws NotFoundException when the service does not exist', async () => {
       prisma.service.findUnique.mockResolvedValue(null);
 
-      await expect(service.update('missing', { title: 'New' })).rejects.toBeInstanceOf(
-        NotFoundException,
-      );
+      await expect(
+        service.update('missing', { title: 'New' }),
+      ).rejects.toBeInstanceOf(NotFoundException);
       expect(prisma.service.update).not.toHaveBeenCalled();
     });
 
     it('only sends the fields present in a partial update', async () => {
       prisma.service.findUnique.mockResolvedValue({ id: 'service-1' });
-      prisma.service.update.mockResolvedValue({ id: 'service-1', price: 29.99 });
+      prisma.service.update.mockResolvedValue({
+        id: 'service-1',
+        price: 29.99,
+      });
 
       await service.update('service-1', { price: 29.99 });
 

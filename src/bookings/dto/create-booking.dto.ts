@@ -33,7 +33,7 @@ export class CreateBookingDto {
     format: 'email',
     description: 'Customer email address',
   })
-  @Transform(({ value }) =>
+  @Transform(({ value }: { value: unknown }) =>
     typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   @IsNotEmpty({ message: 'Customer email is required' })
@@ -62,10 +62,7 @@ export class CreateBookingDto {
     description: 'Booking date (ISO 8601 date string)',
   })
   @IsNotEmpty({ message: 'Booking date is required' })
-  @IsDateString(
-    {},
-    { message: 'Booking date must be a valid ISO date string' },
-  )
+  @IsDateString({}, { message: 'Booking date must be a valid ISO date string' })
   bookingDate: string;
 
   @ApiProperty({

@@ -1,0 +1,20 @@
+services:
+  postgres-test:
+    image: postgres:16
+
+    container_name: booking-postgres-test
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: booking_db_test
+
+    ports:
+      - "5433:5432"
+
+    # Ephemeral storage: this database only ever holds throwaway e2e test
+    # data, so there is nothing worth persisting across restarts.
+    tmpfs:
+      - /var/lib/postgresql/data

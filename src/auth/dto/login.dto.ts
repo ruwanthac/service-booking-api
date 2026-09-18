@@ -8,7 +8,7 @@ export class LoginDto {
     format: 'email',
     description: 'Registered user email address',
   })
-  @Transform(({ value }) => value.trim().toLowerCase())
+  @Transform(({ value }: { value: string }) => value.trim().toLowerCase())
   @IsNotEmpty({ message: 'Email is required' })
   @IsEmail({}, { message: 'Email must be a valid email address' })
   email: string;

@@ -17,5 +17,36 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+
+    container_name: booking-api
+
+    restart: unless-stopped
+
+    # Picks up JWT_SECRET and any other non-connection settings from the
+    # developer's local .env; DATABASE_URL and PORT are overridden below
+    # because inside the Compose network the database is reachable at the
+    # "postgres" hostname, not "localhost".
+    env_file:
+      - .env
+
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/booking_db?schema=public
+      PORT: 3000
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:

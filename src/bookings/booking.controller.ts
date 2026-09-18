@@ -82,10 +82,7 @@ const validationErrorSchema = {
   properties: {
     statusCode: { type: 'number', example: 400 },
     message: {
-      oneOf: [
-        { type: 'array', items: { type: 'string' } },
-        { type: 'string' },
-      ],
+      oneOf: [{ type: 'array', items: { type: 'string' } }, { type: 'string' }],
       example: ['Customer name must be at least 2 characters long'],
     },
     error: { type: 'string', example: 'Bad Request' },

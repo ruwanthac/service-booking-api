@@ -49,6 +49,12 @@ describe('App (e2e)', () => {
     await app.close();
   });
 
+  it('/health (GET) reports the database as up', async () => {
+    const res = await request(app.getHttpServer()).get('/health').expect(200);
+
+    expect(res.body).toEqual({ status: 'ok', database: 'up' });
+  });
+
   it('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')
